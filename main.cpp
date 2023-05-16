@@ -1,7 +1,14 @@
 #include <iostream>
-#include <ncurses.h>
+#include "text_editor.h"
 
-int main() {
+using namespace std;
 
+int main(int argc, char* argv[]) {
+
+
+    open_curses();
+
+    refresh();
+    endwin();
     return 0;
 }
