@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <ncurses.h>
 #include "text_editor.h"
+#include "mem_buffer.h"
 
 using namespace std;
 
@@ -11,18 +13,32 @@ void open_curses() {
     refresh();
 }
 
-string get_file_name(int argc, char *argv[]) {
-    if (argc <= 1) {
-        throw std::invalid_argument("Please enter a filename to be opened in the editor");
-    }
-    string s = argv[0];
-    return s;
-}
-
 int main(int argc, char* argv[]) {
     open_curses();
 
-    string name = get_file_name(argc, argv);
+    Editor editor;
+    if (argc > 1) {
+        try {
+            editor = Editor(argv[1]);
+        } catch (const std::invalid_argument& e) {
+            cout << e.what() << endl;
+            return 1;
+        }
+    }
+    else {
+        editor = Editor();
+    }
+
+    try {
+        while (editor.getMode() != 'x') {
+            editor.printBuffer();
+            int input = getch();
+            editor.readInput(input);
+        }
+    } catch (const std::exception& e) {
+        cout << e.what() << endl;
+        return 1;
+    }
 
     refresh();
     endwin();
